@@ -1,4 +1,4 @@
-# ------ Calculate binomial model with simple python implementation ------
+# ------ Calculates binomial model with simple python implementation ------
 #
 # 1. Define option payoff (see also Examples below):
 #    - Define function which takes as argument an object of class Node
@@ -16,9 +16,6 @@
 #    - Print values of Tree (S, Y, U) up to a specific depth: Tree.printTree(depth, 'S' or 'Y' or 'U')
 #    - !! printTree is constraint by width of screen, causes ugly prints if depth or values are too big!!
 #
-
-from BinaryTree import BinaryTree, Node
-
 
 print('------ Sheet 7: ------\n')
 #------------------- Sheet 7: Example at beginning of excecise Sheet (call option, strike price = 80) ----------------------

@@ -12,9 +12,11 @@ class Node:
         self.nextNodeDown = None
         self.S = 0
         self.Y = 0
+        self.V = 0
         self.U = 0
         self.alpha = 0
         self.beta = 0
+        self.delta = 0
         self.Tau = ''
         self.optionPayOff = optionPayOff
         self.omega = 'S_0'
@@ -44,17 +46,24 @@ class Node:
         self.Y = self.optionPayOff(self)
         #compute U, alpha and beta
         if self.time == self.T:
+            self.V = self.Y
             self.U = self.Y
         else:
             p_star = (1 + self.r - self.d) / (self.u - self.d)
-            self.U = 1 / (1 + self.r) * (p_star * self.nextNodeUp.U + (1 - p_star) * self.nextNodeDown.U)
-            if self.isECC == False:
-                self.U = max(self.Y, self.U)       
+
+            self.V = 1 / (1 + self.r) * (p_star * self.nextNodeUp.U + (1 - p_star) * self.nextNodeDown.U)
+            if self.isECC == True:
+                self.U = self.V
+            else:
+                self.U = max(self.Y, self.V)
+                self.delta = pow((1 + self.r), -self.time) * (self.U - self.V)
+
             self.alpha = (self.nextNodeUp.U - self.nextNodeDown.U) / ((self.u - self.d) * self.S)
             self.beta = pow((1 + self.r), -(self.time + 1)) * (self.u * self.nextNodeDown.U - self.d *  self.nextNodeUp.U) / (self.u - self.d)
 
         self.stringsForPrint['S'] = f' S={self.S:.2f} '
         self.stringsForPrint['Y'] = f' Y={self.Y:.2f} '
+        self.stringsForPrint['V'] = f' V={self.V:.2f} '
         self.stringsForPrint['U'] = f' U={self.U:.2f} '
 
     def computeTau(self):
@@ -91,6 +100,19 @@ class Node:
                 self.nextNodeUp.getAlphaBeta(omega)
             elif omega[self.time] == 'd':
                 self.nextNodeDown.getAlphaBeta(omega)
+            else:
+                print('Not a valid input')
+
+    def getAlphaBetaSuperHedging(self, omega, time, sumDeltas):
+        if self.time >= time:
+            sumDeltas += self.delta
+        if len(omega) == self.time:
+            print(f'{self.omega} : alpha = {self.alpha:.3f}, beta = {self.beta + sumDeltas:.3f}', '\n')
+        else:
+            if omega[self.time] == 'u':
+                self.nextNodeUp.getAlphaBetaSuperHedging(omega, time, sumDeltas)
+            elif omega[self.time] == 'd':
+                self.nextNodeDown.getAlphaBetaSuperHedging(omega, time, sumDeltas)
             else:
                 print('Not a valid input')
 
@@ -151,6 +173,15 @@ class BinaryTree:
             return
         else:
             self.root.getAlphaBeta(list(omega))
+
+    def getAlphaBetaSuperHedging(self, omega, time):
+        if len(list(omega)) < time:
+            print(f'You need to choose a node at a time point bigger than {time}')
+            return
+        elif len(list(omega)) >= self.T:
+            return
+        else:
+            self.root.getAlphaBetaSuperHedging(list(omega), time, 0)
 
     def getTau(self):
         print('Tau( omega ):')
