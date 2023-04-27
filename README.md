@@ -12,6 +12,6 @@
 3. Methods of class Tree:
    - Get price of option at a specific node (e.g. first up then down) in the tree: Tree.getPrice('ud') (for price at t = 0 use empty string '')
    - Get values of alpha and beta at a specific node (e.g. first up then down) in the tree: Tree.getAlphaBeta('ud')
-   - Compute Tau for tree: Tree.getTau()
+   - Compute tau_0 and tau_max (first time delta_t+1 != 0) for tree: Tree.getTau(), Tree.getTau_max()
    - Print values of Tree (S, Y, V, U) up to a specific depth: Tree.printTree(depth, 'S' or 'Y' or 'V' or 'U')
    - !! printTree is constraint by width of screen, causes ugly prints if depth or values are too big!!

@@ -18,6 +18,7 @@ class Node:
         self.beta = 0
         self.delta = 0
         self.Tau = ''
+        self.Tau_max = ''
         self.optionPayOff = optionPayOff
         self.omega = 'S_0'
         self.stringsForPrint = dict()
@@ -67,10 +68,23 @@ class Node:
         self.stringsForPrint['U'] = f' U={self.U:.2f} '
 
     def computeTau(self):
+        #compute tau*_o
         if self.time > 0 and self.prevNode.Tau != '':
             self.Tau = self.prevNode.Tau
-        elif self.Y == self.U:
+        elif round(self.Y, 10) == round(self.U, 10):
             self.Tau = self.time
+        
+    def computeTau_max(self):
+        #compute tau_max
+        if self.time < self.T and self.delta != 0:
+            self.Tau_max = self.time
+        elif self.time > 0 and self.time < self.T:
+            self.Tau_max = self.prevNode.Tau_max
+        elif self.time == self.T:
+            if self.Tau_max == '':
+                self.Tau_max = self.time
+            else:
+                self.Tau_max = self.prevNode.Tau_max
 
     def getPrevStockPrices(self):
         if self.time == 0:
@@ -118,11 +132,21 @@ class Node:
 
     def getTau(self):
         self.computeTau()
+        #print tau*_max
         if self.time == self.T:
-            print('Tau(',self.omega,')', ' = ', self.Tau)
+            print('tau_0(',self.omega,')', ' = ', self.Tau)
         elif self.time < self.T:
             self.nextNodeUp.getTau()
             self.nextNodeDown.getTau()
+
+    def getTau_max(self):
+        self.computeTau_max()
+        #print tau_max
+        if self.time == self.T:
+            print('tau_max(',self.omega,')', ' = ', self.Tau_max)
+        elif self.time < self.T:
+            self.nextNodeUp.getTau_max()
+            self.nextNodeDown.getTau_max()
 
     def getMaxLengthString(self, strType):
         maxlen = len(self.stringsForPrint[strType])
@@ -184,8 +208,13 @@ class BinaryTree:
             self.root.getAlphaBetaSuperHedging(list(omega), time, 0)
 
     def getTau(self):
-        print('Tau( omega ):')
+        print('tau_0( omega ):')
         self.root.getTau()
+        print('\n')
+
+    def getTau_max(self):
+        print('tau_max( omega ):')
+        self.root.getTau_max()
         print('\n')
 
     def printTree(self, depth, strType):
