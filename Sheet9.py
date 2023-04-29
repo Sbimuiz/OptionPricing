@@ -46,6 +46,8 @@ print('Evolution of S:')
 TreeSheet9ACC.printTree(3, 'S')
 print('Evolution of Y:')
 TreeSheet9ACC.printTree(3, 'Y')
+print('Evolution of V:')
+TreeSheet9ACC.printTree(3, 'V')
 
 print('9.1.1:')
 print('Evolution of U:')

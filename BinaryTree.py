@@ -81,7 +81,7 @@ class Node:
         elif self.time > 0 and self.time < self.T:
             self.Tau_max = self.prevNode.Tau_max
         elif self.time == self.T:
-            if self.Tau_max == '':
+            if self.prevNode.Tau_max == '':
                 self.Tau_max = self.time
             else:
                 self.Tau_max = self.prevNode.Tau_max
